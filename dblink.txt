@@ -1,0 +1,2 @@
+MONGO_URI = mongodb+srv://biratjung:itisme1@farcon.j5ea2.mongodb.net/farcon?retryWrites=true&w=majority
+DB_LOCAL_URI = mongodb://localhost:27017/farcon
