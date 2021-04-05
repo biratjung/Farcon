@@ -1,0 +1,11 @@
+Personal:
+email:
+sb-x4cqh5808516@personal.example.com
+passowrd:
+*F;i3Y^<
+
+Business:
+email:
+sb-z2dni5808226@business.example.com
+password:
++K0<z>*1
