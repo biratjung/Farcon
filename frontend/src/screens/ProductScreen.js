@@ -14,6 +14,7 @@ import Rating from '../components/Rating';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { listProductDetails, listProducts } from '../actions/productActions';
+import { PRODUCT_UPDATE_STOCK_RESET } from '../constants/productConstants';
 
 const ProductScreen = ({ history, match }) => {
   const [qty, setQty] = useState(1);
@@ -23,7 +24,14 @@ const ProductScreen = ({ history, match }) => {
   const productDetails = useSelector((state) => state.productDetails);
   const { loading, error, product } = productDetails;
 
+  const productUpdateStock = useSelector((state) => state.productUpdateStock);
+  const { success: successStockUpdate } = productUpdateStock;
+
   useEffect(() => {
+    if (successStockUpdate) {
+      dispatch({ type: PRODUCT_UPDATE_STOCK_RESET });
+    }
+
     dispatch(listProductDetails(match.params.id));
   }, [dispatch, match]);
 

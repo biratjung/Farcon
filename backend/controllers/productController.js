@@ -90,10 +90,30 @@ const updateProduct = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Update a product
+// @route   PUT /api/products/:id
+// @access  Private/Admin
+const updateProductStock = asyncHandler(async (req, res) => {
+  const { countInStock } = req.body;
+
+  const product = await Product.findById(req.params.id);
+
+  if (product) {
+    product.countInStock = countInStock;
+
+    const updatedProductStock = await product.save();
+    res.json(updatedProductStock);
+  } else {
+    res.status(404);
+    throw new Error('Product not found');
+  }
+});
+
 export {
   getProductById,
   getProducts,
   deleteProduct,
   createProduct,
   updateProduct,
+  updateProductStock,
 };
