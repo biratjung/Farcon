@@ -20,7 +20,7 @@ import { PRODUCT_UPDATE_STOCK_RESET } from '../constants/productConstants';
 import { removeFromCart } from '../actions/cartActions';
 import { updateProductStock } from '../actions/productActions';
 
-const OrderScreen = ({ match }) => {
+const OrderScreen = ({ match, history }) => {
   const orderId = match.params.id;
 
   const [sdkReady, setSdkReady] = useState(false);
@@ -59,6 +59,9 @@ const OrderScreen = ({ match }) => {
   }
 
   useEffect(() => {
+    if (!userInfo) {
+      history.push('/login');
+    }
     const addPayPalScript = async () => {
       const { data: clientId } = await axios.get('/api/config/paypal');
       const script = document.createElement('script');
@@ -84,19 +87,11 @@ const OrderScreen = ({ match }) => {
     }
 
     if (successStockUpdate) {
-      console.log('PRODUCT_UPDATE_STOCK_RESET');
       dispatch({ type: PRODUCT_UPDATE_STOCK_RESET });
     }
 
     if (order && successPay) {
-      console.log('sale del loop');
       order.orderItems.forEach((item, i) => {
-        console.log(
-          `countinstock: ${cartItems[i].countInStock}
-              -
-            qty: ${item.qty}
-          Equals: ${cartItems[i].countInStock - item.qty}`
-        );
         const updatedStock = cartItems[i].countInStock - item.qty;
         setCountInStock(cartItems[i].countInStock - item.qty);
         dispatch(
@@ -111,6 +106,7 @@ const OrderScreen = ({ match }) => {
     }
   }, [
     dispatch,
+    history,
     userInfo,
     order,
     orderId,

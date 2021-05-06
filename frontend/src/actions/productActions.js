@@ -18,15 +18,18 @@ import {
   PPRODUCT_UPDATE_STOCK_SUCCESS,
   PRODUCT_UPDATE_STOCK_REQUEST,
   PRODUCT_UPDATE_STOCK_SUCCESS,
+  PRODUCT_CREATE_REVIEW_FAIL,
+  PRODUCT_CREATE_REVIEW_SUCCESS,
+  PRODUCT_CREATE_REVIEW_REQUEST,
 } from '../constants/productConstants';
 import { logout } from './userActions';
 import axios from 'axios';
 
-export const listProducts = () => async (dispatch) => {
+export const listProducts = (keyword = '') => async (dispatch) => {
   try {
     dispatch({ type: PRODUCT_LIST_REQUEST });
 
-    const { data } = await axios.get('/api/products');
+    const { data } = await axios.get(`/api/products?keyword=${keyword}`);
 
     dispatch({ type: PRODUCT_LIST_SUCCESS, payload: data });
   } catch (error) {
@@ -208,6 +211,46 @@ export const updateProductStock = (product) => async (dispatch, getState) => {
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message,
+    });
+  }
+};
+
+export const createProductReview = (productId, review) => async (
+  dispatch,
+  getState
+) => {
+  try {
+    dispatch({
+      type: PRODUCT_CREATE_REVIEW_REQUEST,
+    });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    await axios.post(`/api/products/${productId}/reviews`, review, config);
+
+    dispatch({
+      type: PRODUCT_CREATE_REVIEW_SUCCESS,
+    });
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message;
+    if (message === 'Not authorized, token failed') {
+      dispatch(logout());
+    }
+    dispatch({
+      type: PRODUCT_CREATE_REVIEW_FAIL,
+      payload: message,
     });
   }
 };
